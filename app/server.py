@@ -21,6 +21,7 @@ def chat():
                 return 'Unauthorized: No API key provided', 401
             
             api_key = auth_header.split(' ')[1]  # Extract API key
+            print(f"Received API key in server: {api_key[:8]}...")  # Debug log
             
             data = request.json
             message = data.get('message')

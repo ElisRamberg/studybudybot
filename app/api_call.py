@@ -1,14 +1,13 @@
 from openai import OpenAI
 import os
 
-client = OpenAI(api_key="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")
-
 def get_chatgpt_response(messages, api_key):
     try:
-        # Create client with provided API key
+        if not api_key:
+            raise ValueError("No API key provided")
+            
+        print(f"Using API key: {api_key[:8]}...") # Only print first 8 chars for security
         client = OpenAI(api_key=api_key)
-        
-        print("Creating OpenAI chat completion...")  # Debug log
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,

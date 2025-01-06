@@ -5,6 +5,7 @@ def generate_answer(messages, history=None, mode=None, api_key=None):
     # Initialize conversation with system prompt
     conversation = []
 
+    print(f"Debug - Received API key in generate_answer: {api_key[:8] if api_key else None}")  # Debug log
     print(f"Debug - Received mode: {mode}")  # Debug log
     print(f"Debug - Available modes: {list(SYSTEM_PROMPTS.keys())}")  # Debug log
 
@@ -26,6 +27,9 @@ def generate_answer(messages, history=None, mode=None, api_key=None):
     
     # Log the full conversation for debugging
     print("Full conversation context:", conversation)
+    
+    if not api_key:
+        raise ValueError("No API key provided to generate_answer")
     
     # Pass api_key to get_chatgpt_response
     answer = get_chatgpt_response(conversation, api_key)

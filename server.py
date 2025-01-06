@@ -15,6 +15,14 @@ def home():
 def chat():
     try:
         if request.method == 'POST':
+            # Get API key from Authorization header
+            auth_header = request.headers.get('Authorization')
+            if not auth_header or not auth_header.startswith('Bearer '):
+                return jsonify({"error": "No API key provided"}), 401
+            
+            api_key = auth_header.split(' ')[1]  # Extract API key
+            print(f"Received API key in server: {api_key[:8]}...")  # Debug log
+            
             data = request.json
             message = data.get('message')
             mode = data.get('mode')
@@ -38,7 +46,7 @@ def chat():
                     print("Starting to generate response...")  # Debug log
                     yield "data: \n\n"
                     
-                    for token in generate_answer(messages, history=history, mode=mode):
+                    for token in generate_answer(messages, history=history, mode=mode, api_key=api_key):
                         if token:
                             print(f"Sending token: {token}")  # Debug log
                             yield f"data: {token}\n\n"
@@ -47,11 +55,12 @@ def chat():
                     yield "data: [DONE]\n\n"
                     
                 except Exception as e:
-                    print(f"Error in generate: {str(e)}")
-                    yield f"data: Error: {str(e)}\n\n"
+                    error_message = str(e)
+                    print(f"Error in generate: {error_message}")
+                    yield f"data: Error: {error_message}\n\n"
                     
             return Response(stream_with_context(generate()), mimetype='text/event-stream')
-        
+            
         return jsonify({"error": "Method not allowed"}), 405
         
     except Exception as e:
